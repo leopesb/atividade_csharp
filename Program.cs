@@ -1,31 +1,14 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Net;
 
-namespace HttpClientSample
-{
-    class Program
-    {   
-        private static void Main(string[] args)
-        {
-           GetAsync(client).Wait();
-        }
+var url = "https://jsonplaceholder.typicode.com/todos/3";
 
-        private static HttpClient client = new HttpClient()
-        {
-            BaseAddress = new Uri("https://jsonplaceholder.typicode.com"),
-        };
+var request = WebRequest.Create(url);
+request.Method = "GET";
 
-        private static async Task GetAsync (HttpClient httpClient)
-        {
-            using HttpResponseMessage response = await httpClient.GetAsync("todos/3");
+using var webResponse = request.GetResponse();
+using var webStream = webResponse.GetResponseStream();
 
-            response.EnsureSuccessStatusCode();
+using var reader = new StreamReader(webStream);
+var data = reader.ReadToEnd();
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"{jsonResponse}\n");
-        }
-    }
-}
+Console.WriteLine(data);
